@@ -4,5 +4,6 @@ trash/
 vendor/
 .idea/
 input/sample10.csv
+input/sampleA.csv
 *.log
 app/Article-old.class.php
