@@ -3,10 +3,6 @@ trash/
 .~lock*
 vendor/
 .idea/
-results_*
 input/sample10.csv
 *.log
-results*
-logs/
-app/sample*
 app/Article-old.class.php
