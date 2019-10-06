@@ -23,11 +23,11 @@
 				throw new \Exception("no sheetName");
 			}
 			$this->sheetName = $sheetName;
-			$this->alphabet = range( 'A', 'Z' );
 			$this->resultsFile = $resultsFile;
-			$this->row = 1;
 			$this->apiKeySimilarWeb  = $apiKey;
 			$this->file = $file;
+			$this->alphabet = range( 'A', 'Z' );
+			$this->row = 1;
 			$this->pageViewSheet = new Worksheet($this->spreadsheet, $this->sheetName);
 
 			try {

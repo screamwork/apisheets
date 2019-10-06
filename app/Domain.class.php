@@ -13,7 +13,6 @@
 		private $apiKey;
 		private $file;
 		private $resultsFile;
-		private $url_articles;
 		private $row;
 		private $sheetName;
 		private $writer;
@@ -26,11 +25,10 @@
 				throw new \Exception("no sheetName");
 			}
 			$this->sheetName = $sheetName;
-			$this->alphabet = range( 'A', 'Z' );
 			$this->apiKey = $apiKey;
 			$this->file = $file;
 			$this->resultsFile = $resultsFile;
-			$this->url_articles = "https://api.newswhip.com/v1/articles?key=" . $this->apiKey;
+			$this->alphabet = range( 'A', 'Z' );
 			$this->row = 1;
 			$this->queryRow = 1;
 			$this->domainSheet = new Worksheet($this->spreadsheet, $this->sheetName);

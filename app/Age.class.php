@@ -23,12 +23,12 @@
 				throw new \Exception("no sheetName");
 			}
 			$this->sheetName = $sheetName;
-			$this->alphabet = range( 'A', 'Z' );
 			$this->resultsFile = $resultsFile;
-			$this->row = 1;
 			$this->apiKeySim  = $apiKey;
 			$this->file = $file;
+			$this->alphabet = range( 'A', 'Z' );
 			$this->ageSheet = new Worksheet($this->spreadsheet, $this->sheetName);
+			$this->row = 1;
 
 			try {
 				$this->reader = IOFactory::createReader("Xlsx");
