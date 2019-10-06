@@ -2,7 +2,7 @@
 
 	require 'vendor/autoload.php';
 
-	use App\Article1;
+	use App\Article;
 	use App\Domain;
 	use App\Gender;
 	use App\Age;
@@ -22,7 +22,7 @@
 	$apiKeySimilarWeb = "3dd3e5ad256144738582bb3776f1acc3";
 
 	try {
-		new Article1($apiKeyNewsWhip, $inputFile, $outputFile, "Article");
+		new Article($apiKeyNewsWhip, $inputFile, $outputFile, "Article");
 		new Domain($apiKeyNewsWhip, $inputFile, $outputFile, "Domain");
 		new Gender($apiKeySimilarWeb, $inputFile, $outputFile, "Gender");
 		new Age($apiKeySimilarWeb, $inputFile, $outputFile, "Age");

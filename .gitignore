@@ -9,3 +9,4 @@ input/sample10.csv
 results*
 logs/
 app/sample*
+app/Article-old.class.php

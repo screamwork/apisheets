@@ -1,6 +1,6 @@
 <?php
 
-	require 'vendor/autoload.php';
+	namespace App;
 
 	use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 	use PhpOffice\PhpSpreadsheet\IOFactory;
@@ -21,12 +21,15 @@
 		private $querySheet;
 		private $queryRow;
 
-		public function __construct() {
-			$this->sheetName = 'Article';
+		public function __construct($apiKey = "CmAHq1F6wW7UQ", $file = 'sample.csv', $resultsFile = "results.xlsx", $sheetName = false) {
+			if(!$sheetName) {
+				throw new \Exception("no sheetName");
+			}
+			$this->sheetName = $sheetName;
 			$this->alphabet = range('A', 'Z');
-			$this->apiKey = 'CmAHq1F6wW7UQ';
-			$this->file = 'sample.csv';
-			$this->resultsFile = 'results.xlsx';
+			$this->apiKey = $apiKey;
+			$this->file = $file;
+			$this->resultsFile = $resultsFile;
 			$this->url_articles = "https://api.newswhip.com/v1/articles?key=" . $this->apiKey;
 			$this->row = 1;
 			$this->queryRow = 1;
@@ -100,25 +103,22 @@
 			$filter = json_encode(["href:\"$arr[1]\"", "domain:\"$parse->host\""]);
 			$json = $this->get_a_curl($filter, $startDate, $endDate);
 
-			if(isset($_GET['debug'])) {
-				print '<pre>'.print_r($json, true).'</pre>';
-			}
-
 			sleep(1);
 
-			if($json && is_object($json) && !empty($json->articles)) {
+			if($json && !empty($json)) {
 
-				foreach($json->articles as $d) {
+				foreach($json as $d) {
 
 					$needed = [
-						'id'           => $currentId,
-						'date'         => gmdate("m-d-y", $d->publication_timestamp / 1000),
-						'link'         => $d->link, //$arr[1]
-						'facebook'     => !empty($d->fb_data->total_engagement_count) ? $d->fb_data->total_engagement_count : "N/A",
-						'twitter'      => !empty($d->tw_data->tw_count) ? $d->tw_data->tw_count: "N/A",
-						'linkedIn'     => !empty($d->li_data->li_count) ? $d->li_data->li_count : "N/A",
-						'publisher'    => !empty($d->authors) ? implode(",", $d->authors) : "N/A",
-						'nw_max'       => !empty($d->max_nw_score) ? $d->max_nw_score : "N/A",
+						'id'             => $currentId,
+						'date'           => $arr[0],
+						'link'           => $arr[1],
+						'facebook_count' => !empty($d->stats->fb_total->count) ? $d->stats->fb_total->count : "N/A",
+						'facebook_total' => !empty($d->stats->fb_total->sum)   ? $d->stats->fb_total->sum : "N/A",
+						'twitter_count'  => !empty($d->stats->twitter->count)  ? $d->stats->twitter->count: "N/A",
+						'twitter_total'  => !empty($d->stats->twitter->sum)    ? $d->stats->twitter->sum: "N/A",
+						'linkedIn_count' => !empty($d->stats->likedin->count)  ? $d->stats->likedin->count : "N/A",
+						'linkedIn_total' => !empty($d->stats->likedin->sum)    ? $d->stats->likedin->sum : "N/A",
 					];
 
 					$this->setSpreadSheetValues($needed);
@@ -140,14 +140,15 @@
 				$weekAgo = date("m/d/y", strtotime("-7 day", $now));
 
 				$needed = [
-					'id'        => $currentId,
-					'date'      => $weekAgo,
-					'link'      => $arr[1],
-					'facebook'  => 'N/A',
-					'twitter'   => 'N/A',
-					'linkedIn'  => 'N/A',
-					'publisher' => 'N/A',
-					'nw_max'    => 'N/A',
+					'id'             => $currentId,
+					'date'           => $weekAgo,
+					'link'           => $arr[1],
+					'facebook_count' => "N/A",
+					'facebook_total' => "N/A",
+					'twitter_count'  => "N/A",
+					'twitter_total'  => "N/A",
+					'linkedIn_count' => "N/A",
+					'linkedIn_total' => "N/A",
 				];
 
 				/* query tab */
@@ -247,10 +248,12 @@
 			$curl_articles = "
 				curl -H \"Content-Type: application/json\" -X POST -d '{
 					\"filters\": $filter,
+					\"sort_by\": \"fb_total.sum\",
+					\"aggregate_by\": \"domain\",
 					\"from\": $from,
 					\"to\": $to,
 					\"size\": 5000
-				}' \"https://api.newswhip.com/v1/articles?key=$this->apiKey\"
+				}' \"https://api.newswhip.com/v1/stats?key=$this->apiKey\"
 			";
 
 			$exec = shell_exec($curl_articles);
@@ -262,14 +265,15 @@
 				$curl_articles_no_date = "
 					curl -H \"Content-Type: application/json\" -X POST -d '{
 						\"filters\": $filter,
+						\"sort_by\": \"fb_total.sum\",
+						\"aggregate_by\": \"domain\",
 						\"size\": 5000
-					}' \"https://api.newswhip.com/v1/articles?key=$this->apiKey\"
+					}' \"https://api.newswhip.com/v1/stats?key=$this->apiKey\"
 				";
 
 				$exec1 = shell_exec($curl_articles_no_date);
+				$json = json_decode($exec1);
 				return json_decode($exec1);
 			}
 		}
 	}
-
-	new Article();
